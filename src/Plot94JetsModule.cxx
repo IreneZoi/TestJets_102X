@@ -5,6 +5,7 @@
 #include "UHH2/core/include/Event.h"
 #include "UHH2/common/include/CommonModules.h"
 #include "UHH2/common/include/CleaningModules.h"
+#include <UHH2/common/include/MCWeight.h>
 #include "UHH2/common/include/ElectronHists.h"
 #include "UHH2/common/include/NSelections.h"
 #include "UHH2/Plot94Jets/include/Plot94JetsSelections.h"
@@ -31,13 +32,19 @@ private:
     std::unique_ptr<CommonModules> common;
     
     std::unique_ptr<JetCleaner> jetcleaner;
+    
+    std::unique_ptr<uhh2::AnalysisModule> MCWeightModule;
+    std::unique_ptr<uhh2::AnalysisModule> MCPileupReweightModule;
+
    
     // declare the Selections to use. Use unique_ptr to ensure automatic call of delete in the destructor,
     // to avoid memory leaks.
-    std::unique_ptr<Selection> njet_sel, dijet_sel;
+  std::unique_ptr<Selection> njet_sel;
     
     // store the Hists collection as member variables. Again, use unique_ptr to avoid memory leaks.
-    std::unique_ptr<Hists> h_nocuts, h_njet, h_dijet, h_ele;
+  std::unique_ptr<Hists> h_nocuts, h_njet, h_jets;
+  bool isMC;
+
 };
 
 
@@ -60,12 +67,28 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
         cout << " " << kv.first << " = " << kv.second << endl;
     }
     
-    // 1. setup other modules. CommonModules and the JetCleaner:
+    isMC = (ctx.get("dataset_type") == "MC");
+
+
+    if(isMC)
+      {
+	MCWeightModule.reset(new MCLumiWeight(ctx));
+	MCPileupReweightModule.reset(new MCPileupReweight(ctx));
+      }
+
+
+// 1. setup other modules. CommonModules and the JetCleaner:
     common.reset(new CommonModules());
     // TODO: configure common here, e.g. by 
     // calling common->set_*_id or common->disable_*
+    common->switch_jetlepcleaner(false);
+    common->disable_jetpfidfilter();
+    common->disable_jersmear(); //irene                                                                                                                                                                                                                                       
+    common->disable_jec(); //irene                                                                                                                                                                                                                                            
+
     common->init(ctx);
-    jetcleaner.reset(new JetCleaner(ctx, 30.0, 2.4)); 
+
+    jetcleaner.reset(new JetCleaner(ctx, 30.0, 5.)); 
     
     // note that the JetCleaner is only kept for the sake of example;
     // instead of constructing a jetcleaner explicitly,
@@ -75,13 +98,15 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     
     // 2. set up selections
     njet_sel.reset(new NJetSelection(2)); // see common/include/NSelections.h
-    dijet_sel.reset(new DijetSelection()); // see Plot94JetsSelections
+
+
 
     // 3. Set up Hists classes:
     h_nocuts.reset(new Plot94JetsHists(ctx, "NoCuts"));
-    h_njet.reset(new Plot94JetsHists(ctx, "Njet"));
-    h_dijet.reset(new Plot94JetsHists(ctx, "Dijet"));
-    h_ele.reset(new ElectronHists(ctx, "ele_nocuts"));
+    h_njet.reset(new Plot94JetsHists(ctx, "2jets"));
+    h_jets.reset(new Plot94JetsHists(ctx, "jets"));
+
+
 }
 
 
@@ -99,24 +124,22 @@ bool Plot94JetsModule::process(Event & event) {
     cout << "Plot94JetsModule: Starting to process event (runid, eventid) = (" << event.run << ", " << event.event << "); weight = " << event.weight << endl;
     
     // 1. run all modules other modules.
-    common->process(event);
-    jetcleaner->process(event);
-    
-    // 2. test selections and fill histograms
-    h_ele->fill(event);
     h_nocuts->fill(event);
+
+    bool pass_cm = common->process(event);
+    if(!pass_cm) return false;
+    jetcleaner->process(event);
+    sort_by_pt<Jet>(*event.jets);
+    // 2. test selections and fill histograms
+    h_jets->fill(event);
     
     bool njet_selection = njet_sel->passes(event);
     if(njet_selection){
         h_njet->fill(event);
     }
 
-    bool dijet_selection = dijet_sel->passes(event);
-    if(dijet_selection){
-        h_dijet->fill(event);
-    }
     // 3. decide whether or not to keep the current event in the output:
-    return njet_selection && dijet_selection;
+    return true;
 }
 
 // as we want to run the ExampleCycleNew directly with AnalysisModuleRunner,
