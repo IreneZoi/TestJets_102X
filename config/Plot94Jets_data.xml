@@ -12,7 +12,7 @@
 
 <!--                                                                                                                                                                                                                                                                          
    <ConfigParse NEventsBreak="0" FileSplit="40" /> 
-   <ConfigSGE RAM ="8" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_data"/>                                                                                                                                                                           
+   <ConfigSGE RAM ="2" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_data"/>                                                                                                                                                                           
  -->
 
 
@@ -21,7 +21,7 @@
     <Library Name="libSUHH2Plot94Jets"/>
     <Package Name="SUHH2Plot94Jets.par" />
 
-   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="41529.0" >
+   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="1" >
    <!-- <Cycle Name="uhh2::AnalysisModuleRunner"  RunMode="PROOF" ProofServer="lite://"  ProofWorkDir="/nfs/dust/cms/user/ottjoc/proof-wd/" ProofNodes="2" OutputDirectory="./" PostFix="" TargetLumi="1" >  -->
 
         <InputData Version="DATA_JetHT_Run2017B" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
@@ -56,8 +56,8 @@
             <Item Name="ElectronCollection" Value="slimmedElectronsUSER" />
             <Item Name="MuonCollection" Value="slimmedMuonsUSER" /> 
             <Item Name="TauCollection" Value="slimmedTaus" />
-            <Item Name="JetCollection" Value="patJetsAK4PFPUPPI" />
-<!--	    <Item Name="additionalBranches" Value="patJetsAK8PFPUPPI" />-->
+            <Item Name="JetCollection" Value="updatedPatJetsSlimmedJetsPuppi" />  <!--patJetsAK4PFPUPPI-->
+	    <Item Name="additionalBranches" Value="patJetsAK8PFPUPPI" />
 <!--            <Item Name="TopJetCollection" Value="updatedPatJetsPatJetsAK8PFPUPPI" />--> <!--patJetsAK8PFPUPPI" />-->
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
             <Item Name="METName" Value="slimmedMETsPuppi" />
