@@ -32,17 +32,16 @@ private:
     std::unique_ptr<CommonModules> common;
     
     std::unique_ptr<JetCleaner> jetcleaner;
-    
-    std::unique_ptr<uhh2::AnalysisModule> MCWeightModule;
-    std::unique_ptr<uhh2::AnalysisModule> MCPileupReweightModule;
+    std::unique_ptr<JetCleaner> AK8jetcleaner;
 
-   
+    Event::Handle<vector<Jet>> handleAK8Jets;
+
     // declare the Selections to use. Use unique_ptr to ensure automatic call of delete in the destructor,
     // to avoid memory leaks.
-  std::unique_ptr<Selection> njet_sel;
+  std::unique_ptr<Selection> njet_sel,twoAK8_sel;
     
     // store the Hists collection as member variables. Again, use unique_ptr to avoid memory leaks.
-  std::unique_ptr<Hists> h_nocuts, h_njet, h_jets;
+  std::unique_ptr<Hists> h_nocuts, h_common, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_2jet;
   bool isMC;
 
 };
@@ -69,13 +68,8 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     
     isMC = (ctx.get("dataset_type") == "MC");
 
-
-    if(isMC)
-      {
-	MCWeightModule.reset(new MCLumiWeight(ctx));
-	MCPileupReweightModule.reset(new MCPileupReweight(ctx));
-      }
-
+    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+    
 
 // 1. setup other modules. CommonModules and the JetCleaner:
     common.reset(new CommonModules());
@@ -89,6 +83,8 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     common->init(ctx);
 
     jetcleaner.reset(new JetCleaner(ctx, 30.0, 5.)); 
+    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
+
     
     // note that the JetCleaner is only kept for the sake of example;
     // instead of constructing a jetcleaner explicitly,
@@ -103,8 +99,12 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
 
     // 3. Set up Hists classes:
     h_nocuts.reset(new Plot94JetsHists(ctx, "NoCuts"));
-    h_njet.reset(new Plot94JetsHists(ctx, "2jets"));
-    h_jets.reset(new Plot94JetsHists(ctx, "jets"));
+    h_common.reset(new Plot94JetsHists(ctx, "common"));
+    h_jetcleaner.reset(new Plot94JetsHists(ctx, "jetcleaner"));
+    h_AK8jetcleaner.reset(new Plot94JetsHists(ctx, "AK8jetcleaner"));
+    h_2AK8.reset(new Plot94JetsHists(ctx, "2AK8"));
+    h_noOverlap.reset(new Plot94JetsHists(ctx, "noOverlap"));
+    h_2jet.reset(new Plot94JetsHists(ctx, "2jets"));
 
 
 }
@@ -128,14 +128,65 @@ bool Plot94JetsModule::process(Event & event) {
 
     bool pass_cm = common->process(event);
     if(!pass_cm) return false;
+    h_common->fill(event);
+
     jetcleaner->process(event);
     sort_by_pt<Jet>(*event.jets);
+    h_jetcleaner->fill(event);
+
+    AK8jetcleaner->process(event);
+    vector<Jet> AK8Jets = event.get(handleAK8Jets);
+    sort_by_pt<Jet>(AK8Jets);
+    h_AK8jetcleaner->fill(event);
+
     // 2. test selections and fill histograms
-    h_jets->fill(event);
+
     
+    cout << " NUMBER OF AK8 " << AK8Jets.size() << endl;
+    if(AK8Jets.size() < 2.) return false;
+    cout << " filling "  << endl;
+
+    h_2AK8->fill(event);
+
+
+    //Cleaning(removing) AK4 if overlapping with AK8                                                                                                                                                                                                                                
+    std::vector<Jet>* AK4Jets(new std::vector<Jet> (*event.jets));
+
+    const Jet & tj_0 = AK8Jets[0];
+    const Jet & tj_1 = AK8Jets[1];
+
+    AK4Jets->clear();
+    AK4Jets->reserve(event.jets->size());
+
+
+    for(const Jet ak4:*event.jets)
+      {
+	bool bdeltaR=true;
+	double deltar_0 = deltaR(ak4,tj_0);
+	double deltar_1 = deltaR(ak4,tj_1);
+	if((deltar_0 < 1.2) || (deltar_1 < 1.2)) bdeltaR=false;
+	if(bdeltaR) AK4Jets->push_back(ak4);
+      }
+
+    sort_by_pt<Jet>(*AK4Jets);
+    ////put cleaned AK4 jets in event.jet                                                                                                                                                                                                                                           
+    event.jets->clear();
+    event.jets->reserve(AK4Jets->size());
+    for(const auto & j : *AK4Jets) event.jets->push_back(j);
+    sort_by_pt<Jet>(*event.jets);
+    sort_by_pt<Jet>(AK8Jets);
+
+    /////////////////AK4 cleaning end ////////////////                                                                                                                                                                                                                              
+    h_noOverlap->fill(event);
+
+
+
+
+
+
     bool njet_selection = njet_sel->passes(event);
     if(njet_selection){
-        h_njet->fill(event);
+        h_2jet->fill(event);
     }
 
     // 3. decide whether or not to keep the current event in the output:
