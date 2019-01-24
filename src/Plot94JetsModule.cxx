@@ -5,6 +5,7 @@
 #include "UHH2/core/include/Event.h"
 #include "UHH2/common/include/CommonModules.h"
 #include "UHH2/common/include/CleaningModules.h"
+#include "UHH2/common/include/JetCorrections.h"
 #include <UHH2/common/include/MCWeight.h>
 #include "UHH2/common/include/ElectronHists.h"
 #include "UHH2/common/include/NSelections.h"
@@ -30,7 +31,21 @@ public:
 private:
     
     std::unique_ptr<CommonModules> common;
-    
+
+    std::unique_ptr<JetCorrector> jet_corrector;
+
+    std::unique_ptr<JetCorrector> jet_corrector_B;
+    std::unique_ptr<JetCorrector> jet_corrector_C;
+    std::unique_ptr<JetCorrector> jet_corrector_DE;
+    std::unique_ptr<JetCorrector> jet_corrector_F;
+
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector;
+  
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_B;
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_C;
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_DE;
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_F;
+
     std::unique_ptr<JetCleaner> jetcleaner;
     std::unique_ptr<JetCleaner> AK8jetcleaner;
 
@@ -38,11 +53,17 @@ private:
 
     // declare the Selections to use. Use unique_ptr to ensure automatic call of delete in the destructor,
     // to avoid memory leaks.
-  std::unique_ptr<Selection> njet_sel,twoAK8_sel;
+    std::unique_ptr<Selection> njet_sel,twoAK8_sel;
     
     // store the Hists collection as member variables. Again, use unique_ptr to avoid memory leaks.
-  std::unique_ptr<Hists> h_nocuts, h_common, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_2jet;
-  bool isMC;
+  std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_2jet;
+    bool isMC;
+
+    const int runnr_B = 299329;
+    const int runnr_C = 302029;
+    const int runnr_D = 303434;
+    const int runnr_E = 304826;
+    const int runnr_F = 306462;
 
 };
 
@@ -82,6 +103,40 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
 
     common->init(ctx);
 
+    // Jet correctors                                                                                                                                                                                                                                                      
+    std::vector<std::string> JEC_AK4, JEC_AK8,JEC_AK4_B,JEC_AK4_C,JEC_AK4_DE,JEC_AK4_F,JEC_AK8_B,JEC_AK8_C,JEC_AK8_DE,JEC_AK8_F;
+
+    if(isMC)
+      {
+	JEC_AK4     = JERFiles::Fall17_17Nov2017_V32_L123_AK4PFPuppi_MC ;
+	JEC_AK8     = JERFiles::Fall17_17Nov2017_V32_L123_AK8PFPuppi_MC ;
+      }
+    else
+      {
+	JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFPuppi_DATA;
+	JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFPuppi_DATA;
+	JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFPuppi_DATA;
+	JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFPuppi_DATA;
+
+	JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFPuppi_DATA;
+	JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFPuppi_DATA;
+	JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFPuppi_DATA;
+	JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFPuppi_DATA;
+      }
+    
+    jet_corrector.reset(new JetCorrector(ctx, JEC_AK4));
+    AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFPUPPI"));
+
+    jet_corrector_B.reset(new JetCorrector(ctx, JEC_AK4_B));
+    jet_corrector_C.reset(new JetCorrector(ctx, JEC_AK4_C));
+    jet_corrector_DE.reset(new JetCorrector(ctx, JEC_AK4_DE));
+    jet_corrector_F.reset(new JetCorrector(ctx, JEC_AK4_F));
+
+    AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFPUPPI"));
+    AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFPUPPI"));
+    AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFPUPPI"));
+    AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFPUPPI"));
+
     jetcleaner.reset(new JetCleaner(ctx, 30.0, 5.)); 
     AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
 
@@ -100,6 +155,7 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     // 3. Set up Hists classes:
     h_nocuts.reset(new Plot94JetsHists(ctx, "NoCuts"));
     h_common.reset(new Plot94JetsHists(ctx, "common"));
+    h_jec.reset(new Plot94JetsHists(ctx, "jec"));
     h_jetcleaner.reset(new Plot94JetsHists(ctx, "jetcleaner"));
     h_AK8jetcleaner.reset(new Plot94JetsHists(ctx, "AK8jetcleaner"));
     h_2AK8.reset(new Plot94JetsHists(ctx, "2AK8"));
@@ -129,6 +185,41 @@ bool Plot94JetsModule::process(Event & event) {
     bool pass_cm = common->process(event);
     if(!pass_cm) return false;
     h_common->fill(event);
+
+
+    if(isMC)
+      {
+	jet_corrector->process(event);
+	AK8jet_corrector->process(event);
+	jet_corrector->correct_met(event);
+      }
+    else
+      {
+	if(event.run < runnr_C)  {
+	  jet_corrector_B->process(event);
+	  AK8jet_corrector_B->process(event);
+	  jet_corrector_B->correct_met(event);
+	}
+	else if(event.run < runnr_D && event.run >= runnr_C){
+	  jet_corrector_C->process(event);
+	  AK8jet_corrector_C->process(event);
+	  jet_corrector_C->correct_met(event);
+	}
+	else if(event.run >= runnr_D && event.run < runnr_F){
+	  jet_corrector_DE->process(event);
+	  AK8jet_corrector_DE->process(event);
+	  jet_corrector_DE->correct_met(event);
+	}
+	else if(event.run >= runnr_F){
+	  jet_corrector_F->process(event);
+	  AK8jet_corrector_F->process(event);
+	  jet_corrector_F->correct_met(event);
+	}
+      }
+
+
+	h_jec->fill(event);
+
 
     jetcleaner->process(event);
     sort_by_pt<Jet>(*event.jets);
