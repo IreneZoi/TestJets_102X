@@ -12,7 +12,7 @@
 
 <!--                                                                                                                                                                                                                                                                          
    <ConfigParse NEventsBreak="0" FileSplit="40" /> 
-   <ConfigSGE RAM ="2" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_data"/>                                                                                                                                                                           
+   <ConfigSGE RAM ="2" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_data_chs"/>                                                                                                                                                                           
  -->
 
 
@@ -24,27 +24,27 @@
    <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="1" >
    <!-- <Cycle Name="uhh2::AnalysisModuleRunner"  RunMode="PROOF" ProofServer="lite://"  ProofWorkDir="/nfs/dust/cms/user/ottjoc/proof-wd/" ProofNodes="2" OutputDirectory="./" PostFix="" TargetLumi="1" >  -->
 
-        <InputData Version="DATA_JetHT_Run2017B" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
+        <InputData Version="DATA_chs_JetHT_Run2017B" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
 	  &DATA_JetHT_Run2017B;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
         
-        <InputData Version="DATA_JetHT_Run2017C" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
+        <InputData Version="DATA_chs_JetHT_Run2017C" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
 	  &DATA_JetHT_Run2017C;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
         
-        <InputData Version="DATA_JetHT_Run2017D" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
+        <InputData Version="DATA_chs_JetHT_Run2017D" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
 	  &DATA_JetHT_Run2017D;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
         
-        <InputData Version="DATA_JetHT_Run2017E" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
+        <InputData Version="DATA_chs_JetHT_Run2017E" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
 	  &DATA_JetHT_Run2017E;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
         
-        <InputData Version="DATA_JetHT_Run2017F" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
+        <InputData Version="DATA_chs_JetHT_Run2017F" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
 	  &DATA_JetHT_Run2017F;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
@@ -56,13 +56,13 @@
             <Item Name="ElectronCollection" Value="slimmedElectronsUSER" />
             <Item Name="MuonCollection" Value="slimmedMuonsUSER" /> 
             <Item Name="TauCollection" Value="slimmedTaus" />
-            <Item Name="JetCollection" Value="updatedPatJetsSlimmedJetsPuppi" />  <!--patJetsAK4PFPUPPI-->
-	    <Item Name="additionalBranches" Value="patJetsAK8PFPUPPI" />
+            <Item Name="JetCollection" Value="slimmedJets" />  <!--patJetsAK4PFPUPPI-->
+	    <Item Name="additionalBranches" Value="patJetsAK8PFCHS" />
 <!--            <Item Name="TopJetCollection" Value="updatedPatJetsPatJetsAK8PFPUPPI" />--> <!--patJetsAK8PFPUPPI" />-->
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
-            <Item Name="METName" Value="slimmedMETsPuppi" />
+            <Item Name="METName" Value="slimmedMETs" />
 	    <Item Name="GenInfoName" Value="genInfo" />            
-	    <Item Name="algo" Value="PUPPI" />
+	    <Item Name="algo" Value="CHS" />
             <!-- The list of available collections to read in corresponds to the pointer members in event. The 'Name's to use here in the configuration are:
             
                  PrimaryVertexCollection

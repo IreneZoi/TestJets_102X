@@ -59,7 +59,8 @@ private:
   std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_AK8invMass, h_AK8deta,h_2jet;
     
     bool isMC;
-
+    bool PRINT = false;
+    
     const int runnr_B = 299329;
     const int runnr_C = 302029;
     const int runnr_D = 303434;
@@ -90,7 +91,10 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     
     isMC = (ctx.get("dataset_type") == "MC");
 
-    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+    if(ctx.get("algo") == "PUPPI")
+      handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+    else if(ctx.get("algo") == "CHS")
+      handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFCHS");
     
 
 // 1. setup other modules. CommonModules and the JetCleaner:
@@ -109,37 +113,74 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
 
     if(isMC)
       {
-	JEC_AK4     = JERFiles::Fall17_17Nov2017_V32_L123_AK4PFPuppi_MC ;
-	JEC_AK8     = JERFiles::Fall17_17Nov2017_V32_L123_AK8PFPuppi_MC ;
+	if(ctx.get("algo") == "PUPPI") 
+	  {
+	    JEC_AK4     = JERFiles::Fall17_17Nov2017_V32_L123_AK4PFPuppi_MC ;
+	    JEC_AK8     = JERFiles::Fall17_17Nov2017_V32_L123_AK8PFPuppi_MC ;
+	  }
+	if(ctx.get("algo") == "CHS") 
+	  {
+	    JEC_AK4     = JERFiles::Fall17_17Nov2017_V32_L123_AK4PFchs_MC ;
+	    JEC_AK8     = JERFiles::Fall17_17Nov2017_V32_L123_AK8PFchs_MC ;
+	  }
       }
     else
       {
-	JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFPuppi_DATA;
-	JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFPuppi_DATA;
-	JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFPuppi_DATA;
-	JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFPuppi_DATA;
+        if(ctx.get("algo") == "PUPPI")
+          {
+	    JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFPuppi_DATA;
+	    JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFPuppi_DATA;
+	    JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFPuppi_DATA;
+	    JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFPuppi_DATA;
 
-	JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFPuppi_DATA;
-	JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFPuppi_DATA;
-	JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFPuppi_DATA;
-	JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFPuppi_DATA;
+	  }
+        if(ctx.get("algo") == "CHS")
+          {
+	    JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFchs_DATA;
+	    JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFchs_DATA;
+	    JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFchs_DATA;
+	    JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFchs_DATA;
+
+	    JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFchs_DATA;
+	    JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFchs_DATA;
+	    JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFchs_DATA;
+	    JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFchs_DATA;
+	  }
       }
     
     jet_corrector.reset(new JetCorrector(ctx, JEC_AK4));
-    AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFPUPPI"));
+
+    if(ctx.get("algo") == "PUPPI")    AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFPUPPI"));
+    else if(ctx.get("algo") == "CHS") AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFCHS"));
 
     jet_corrector_B.reset(new JetCorrector(ctx, JEC_AK4_B));
     jet_corrector_C.reset(new JetCorrector(ctx, JEC_AK4_C));
     jet_corrector_DE.reset(new JetCorrector(ctx, JEC_AK4_DE));
     jet_corrector_F.reset(new JetCorrector(ctx, JEC_AK4_F));
 
-    AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFPUPPI"));
-    AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFPUPPI"));
-    AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFPUPPI"));
-    AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFPUPPI"));
+
+    if(ctx.get("algo") == "PUPPI")
+      {
+	AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFPUPPI"));
+	AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFPUPPI"));
+	AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFPUPPI"));
+	AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFPUPPI"));
+      }
+    else if(ctx.get("algo") == "CHS")
+      { 
+        AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFCHS"));
+        AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFCHS"));
+        AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFCHS"));
+        AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFCHS"));
+      } 
 
     jetcleaner.reset(new JetCleaner(ctx, 30.0, 5.)); 
-    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
+    if(ctx.get("algo") == "PUPPI")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
+    else if(ctx.get("algo") == "CHS")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFCHS"));
 
     
     // note that the JetCleaner is only kept for the sake of example;
@@ -180,14 +221,16 @@ bool Plot94JetsModule::process(Event & event) {
     // returns true, the event is kept; if it returns false, the event
     // is thrown away.
     
-    cout << "Plot94JetsModule: Starting to process event (runid, eventid) = (" << event.run << ", " << event.event << "); weight = " << event.weight << endl;
+  if(PRINT)  cout << "Plot94JetsModule: Starting to process event (runid, eventid) = (" << event.run << ", " << event.event << "); weight = " << event.weight << endl;
     
     // 1. run all modules other modules.
     h_nocuts->fill(event);
+    if(PRINT)  cout << " input " << endl;
 
     bool pass_cm = common->process(event);
     if(!pass_cm) return false;
     h_common->fill(event);
+    if(PRINT)  cout << " common " << endl;
 
 
     if(isMC)
@@ -195,6 +238,8 @@ bool Plot94JetsModule::process(Event & event) {
 	jet_corrector->process(event);
 	AK8jet_corrector->process(event);
 	jet_corrector->correct_met(event);
+	if(PRINT)  cout << " MC JEC " << endl;
+
       }
     else
       {
@@ -218,20 +263,25 @@ bool Plot94JetsModule::process(Event & event) {
 	  AK8jet_corrector_F->process(event);
 	  jet_corrector_F->correct_met(event);
 	}
+	    if(PRINT)  cout << " DATA JEC " << endl;
       }
 
 
 	h_jec->fill(event);
+	if(PRINT)  cout << " JEC " << endl;
 
 
     jetcleaner->process(event);
     sort_by_pt<Jet>(*event.jets);
     h_jetcleaner->fill(event);
+    if(PRINT)  cout << " jet cleaner " << endl;
+
 
     AK8jetcleaner->process(event);
     vector<Jet> AK8Jets = event.get(handleAK8Jets);
     sort_by_pt<Jet>(AK8Jets);
     h_AK8jetcleaner->fill(event);
+    if(PRINT)  cout << "  AK8 jet cleaner " << endl;
 
     // 2. test selections and fill histograms
 
@@ -275,11 +325,11 @@ bool Plot94JetsModule::process(Event & event) {
 
     auto invariantMass = (AK8Jets[0].v4() + AK8Jets[1].v4()).M();
     if( invariantMass < 1050. ) return false;
-    h_AK8invMass->fill(events);
+    h_AK8invMass->fill(event);
 
     auto deltaeta = AK8Jets[0].eta()-AK8Jets[1].eta();                                                                                                                                                                                                   
     if( fabs(deltaeta) > 1.3) return false;                                                                                                                                                                                                                             
-    h_AK8deta->fill(events);
+    h_AK8deta->fill(event);
 
 
 

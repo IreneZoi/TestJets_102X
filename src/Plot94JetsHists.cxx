@@ -48,9 +48,11 @@ Plot94JetsHists::Plot94JetsHists(Context & ctx, const string & dirname): Hists(c
   book<TH1F>("pt_AK8jet1", "p_{T}^{AK8jet 1} [GeV/c]", 100, 0., 500.);
   book<TH1F>("pt_AK8jet2", "p_{T}^{AK8jet 2} [GeV/c]", 100, 0., 500.);
 
+  if(ctx.get("algo") == "PUPPI")
+    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+  else if(ctx.get("algo") == "CHS")
+    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFCHS");
 
-
-  handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
 
 }
 

@@ -1,19 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE JobConfiguration PUBLIC "" "JobConfig.dtd"[
 
-          <!--                      Data                       -->
-          <!ENTITY DATA_JetHT_Run2017B SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/DATA_JetHT_Run2017B_wHLTobjects.xml" >
-          <!ENTITY DATA_JetHT_Run2017C SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/DATA_JetHT_Run2017C_wHLTobjects.xml" >
-          <!ENTITY DATA_JetHT_Run2017D SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/DATA_JetHT_Run2017D_wHLTobjects.xml" >
-          <!ENTITY DATA_JetHT_Run2017E SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/DATA_JetHT_Run2017E_wHLTobjects.xml" >
-          <!ENTITY DATA_JetHT_Run2017F SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/DATA_JetHT_Run2017F_wHLTobjects.xml" >
+
+<!--                   Background                   -->
+
+<!ENTITY MC_QCD_HT100to200 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT100to200_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT200to300 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT200to300_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT300to500 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT300to500_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT500to700 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT500to700_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT700to1000 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT700to1000_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT1000to1500 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT1000to1500_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT1500to2000 SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT1500to2000_withLowPtJets_wXCONE04R_wPartons.xml">
+<!ENTITY MC_QCD_HT2000toInf SYSTEM "/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/datasets/RunII_94X_v2/MC_QCD_HT2000toInf_withLowPtJets_wXCONE04R_wPartons.xml">
  ]>
 
 
-<!--                                                                                                                                                                                                                                                                          
+
+<!--
    <ConfigParse NEventsBreak="0" FileSplit="40" /> 
-   <ConfigSGE RAM ="2" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_data"/>                                                                                                                                                                           
- -->
+   <ConfigSGE RAM ="2" DISK ="2" Mail="irene.zoi@desy.de" Notification="as" Workdir="workdir_QCD_chs"/> 
+-->
 
 
 <!-- OutputLevel controls which messages are printed; set to VERBOSE or DEBUG for more verbosity, to WARNING or ERROR for less -->
@@ -21,34 +27,49 @@
     <Library Name="libSUHH2Plot94Jets"/>
     <Package Name="SUHH2Plot94Jets.par" />
 
-   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="1" >
-   <!-- <Cycle Name="uhh2::AnalysisModuleRunner"  RunMode="PROOF" ProofServer="lite://"  ProofWorkDir="/nfs/dust/cms/user/ottjoc/proof-wd/" ProofNodes="2" OutputDirectory="./" PostFix="" TargetLumi="1" >  -->
+   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="41529.0" >
 
-        <InputData Version="DATA_JetHT_Run2017B" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
-	  &DATA_JetHT_Run2017B;            <InputTree Name="AnalysisTree" /> 
+        <InputData Version="MC_chs_QCD_HT100to200" Lumi="3.248" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT100to200;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
-        
-        <InputData Version="DATA_JetHT_Run2017C" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
-	  &DATA_JetHT_Run2017C;            <InputTree Name="AnalysisTree" /> 
+
+        <InputData Version="MC_chs_QCD_HT200to300" Lumi="38.132" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT200to300;            <InputTree Name="AnalysisTree" /> 
             <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
-        
-        <InputData Version="DATA_JetHT_Run2017D" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
-	  &DATA_JetHT_Run2017D;            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
+
+
+        <InputData Version="MC_chs_QCD_HT300to500" Lumi="182.110" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT300to500;            <InputTree Name="AnalysisTree" /> 
+            
         </InputData>
-        
-        <InputData Version="DATA_JetHT_Run2017E" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
-	  &DATA_JetHT_Run2017E;            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
+
+        <InputData Version="MC_chs_QCD_HT500to700" Lumi="1813.423" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT500to700;            <InputTree Name="AnalysisTree" /> 
+            
         </InputData>
-        
-        <InputData Version="DATA_JetHT_Run2017F" Lumi="1" NEventsMax="-1" Type="Data" Cacheable="False">
-	  &DATA_JetHT_Run2017F;            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
+
+        <InputData Version="MC_chs_QCD_HT700to1000" Lumi="7408.324" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT700to1000;            <InputTree Name="AnalysisTree" /> 
+            
         </InputData>
-        
+
+        <InputData Version="MC_chs_QCD_HT1000to1500" Lumi="15161.395" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT1000to1500;            <InputTree Name="AnalysisTree" /> 
+            
+        </InputData>
+
+        <InputData Version="MC_chs_QCD_HT1500to2000" Lumi="112970.225" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT1500to2000;            <InputTree Name="AnalysisTree" /> 
+            
+        </InputData>
+
+        <InputData Version="MC_chs_QCD_HT2000toInf" Lumi="265077.261" NEventsMax="-1" Type="MC" Cacheable="False">
+	  &MC_QCD_HT2000toInf;            <InputTree Name="AnalysisTree" /> 
+            
+        </InputData>
+
             
         <UserConfig>
             <!-- define which collections to read from the input. Only specify what you need to save I/O time -->
@@ -56,13 +77,13 @@
             <Item Name="ElectronCollection" Value="slimmedElectronsUSER" />
             <Item Name="MuonCollection" Value="slimmedMuonsUSER" /> 
             <Item Name="TauCollection" Value="slimmedTaus" />
-            <Item Name="JetCollection" Value="updatedPatJetsSlimmedJetsPuppi" />  <!--patJetsAK4PFPUPPI-->
-	    <Item Name="additionalBranches" Value="patJetsAK8PFPUPPI" />
+            <Item Name="JetCollection" Value="slimmedJets" />
+	    <Item Name="additionalBranches" Value="patJetsAK8PFCHS" />
 <!--            <Item Name="TopJetCollection" Value="updatedPatJetsPatJetsAK8PFPUPPI" />--> <!--patJetsAK8PFPUPPI" />-->
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
-            <Item Name="METName" Value="slimmedMETsPuppi" />
+            <Item Name="METName" Value="slimmedMETs" />
 	    <Item Name="GenInfoName" Value="genInfo" />            
-	    <Item Name="algo" Value="PUPPI" />
+	    <Item Name="algo" Value="CHS" />
             <!-- The list of available collections to read in corresponds to the pointer members in event. The 'Name's to use here in the configuration are:
             
                  PrimaryVertexCollection
@@ -87,8 +108,6 @@
                  By default, triggers are read. To explicitly disable reading triggers, use:
                  <Item Name="readTrigger" Value="false" />
             -->
-
-	    <Item Name="lumi_file" Value="/nfs/dust/cms/user/zoiirene/94X/CMSSW_9_4_1/src/UHH2/common/data/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON.root"/>
             
             <!-- the class name of the AnalysisModule subclasses to run: -->
             <Item Name="AnalysisModule" Value="Plot94JetsModule" /> 
