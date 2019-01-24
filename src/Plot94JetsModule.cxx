@@ -56,7 +56,8 @@ private:
     std::unique_ptr<Selection> njet_sel,twoAK8_sel;
     
     // store the Hists collection as member variables. Again, use unique_ptr to avoid memory leaks.
-  std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_2jet;
+  std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_AK8invMass, h_AK8deta,h_2jet;
+    
     bool isMC;
 
     const int runnr_B = 299329;
@@ -160,6 +161,8 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     h_AK8jetcleaner.reset(new Plot94JetsHists(ctx, "AK8jetcleaner"));
     h_2AK8.reset(new Plot94JetsHists(ctx, "2AK8"));
     h_noOverlap.reset(new Plot94JetsHists(ctx, "noOverlap"));
+    h_AK8invMass.reset(new Plot94JetsHists(ctx, "AK8invMass"));
+    h_AK8deta.reset(new Plot94JetsHists(ctx, "AK8deta"));
     h_2jet.reset(new Plot94JetsHists(ctx, "2jets"));
 
 
@@ -270,6 +273,13 @@ bool Plot94JetsModule::process(Event & event) {
     /////////////////AK4 cleaning end ////////////////                                                                                                                                                                                                                              
     h_noOverlap->fill(event);
 
+    auto invariantMass = (AK8Jets[0].v4() + AK8Jets[1].v4()).M();
+    if( invariantMass < 1050. ) return false;
+    h_AK8invMass->fill(events);
+
+    auto deltaeta = AK8Jets[0].eta()-AK8Jets[1].eta();                                                                                                                                                                                                   
+    if( fabs(deltaeta) > 1.3) return false;                                                                                                                                                                                                                             
+    h_AK8deta->fill(events);
 
 
 
