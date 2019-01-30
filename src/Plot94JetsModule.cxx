@@ -286,9 +286,9 @@ bool Plot94JetsModule::process(Event & event) {
     // 2. test selections and fill histograms
 
     
-    cout << " NUMBER OF AK8 " << AK8Jets.size() << endl;
+    if(PRINT)    cout << " NUMBER OF AK8 " << AK8Jets.size() << endl;
     if(AK8Jets.size() < 2.) return false;
-    cout << " filling "  << endl;
+    if(PRINT)    cout << " filling "  << endl;
 
     h_2AK8->fill(event);
 
