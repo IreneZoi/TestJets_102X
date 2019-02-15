@@ -6,11 +6,13 @@
 #include "UHH2/common/include/CommonModules.h"
 #include "UHH2/common/include/CleaningModules.h"
 #include "UHH2/common/include/JetCorrections.h"
+#include "UHH2/common/include/JetIds.h"
 #include <UHH2/common/include/MCWeight.h>
 #include "UHH2/common/include/ElectronHists.h"
 #include "UHH2/common/include/NSelections.h"
 #include "UHH2/Plot94Jets/include/Plot94JetsSelections.h"
 #include "UHH2/Plot94Jets/include/Plot94JetsHists.h"
+#include "UHH2/common/include/PrintingModules.h"
 
 using namespace std;
 using namespace uhh2;
@@ -47,25 +49,34 @@ private:
     std::unique_ptr<GenericJetCorrector> AK8jet_corrector_F;
 
     std::unique_ptr<JetCleaner> jetcleaner;
+    std::unique_ptr<JetCleaner> ak4pfidfilter;
     std::unique_ptr<JetCleaner> AK8jetcleaner;
+
+    std::unique_ptr<AnalysisModule> AK4jet_printer;
 
     Event::Handle<vector<Jet>> handleAK8Jets;
 
     // declare the Selections to use. Use unique_ptr to ensure automatic call of delete in the destructor,
     // to avoid memory leaks.
-    std::unique_ptr<Selection> njet_sel,twoAK8_sel;
+    std::unique_ptr<Selection> njet_sel, deltaEtaAK4_sel, invMAK4_sel;
     
     // store the Hists collection as member variables. Again, use unique_ptr to avoid memory leaks.
-  std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_AK8invMass, h_AK8deta,h_2jet;
-    
+  std::unique_ptr<Hists> h_nocuts, h_common, h_jec, h_jetID,h_jetcleaner, h_AK8jetcleaner,h_2AK8, h_noOverlap, h_AK8invMass, h_AK8deta,h_AK4deta,h_AK4invM,h_2jet;
+     
     bool isMC;
-    bool PRINT = false;
+    bool PRINT = true;
     
     const int runnr_B = 299329;
     const int runnr_C = 302029;
     const int runnr_D = 303434;
     const int runnr_E = 304826;
     const int runnr_F = 306462;
+
+    JetId AK4PFID;
+    
+
+
+
 
 };
 
@@ -182,6 +193,12 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     if(ctx.get("algo") == "PUPPI")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
     else if(ctx.get("algo") == "CHS")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFCHS"));
 
+    if(ctx.get("algo") == "PUPPI")
+      AK4PFID=JetPFID(JetPFID::WP_TIGHT_PUPPI);
+    if(ctx.get("algo") == "CHS")
+      AK4PFID=JetPFID(JetPFID::WP_TIGHT);
+    
+    ak4pfidfilter.reset(new JetCleaner(ctx,AK4PFID));
     
     // note that the JetCleaner is only kept for the sake of example;
     // instead of constructing a jetcleaner explicitly,
@@ -189,9 +206,13 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     // common->set_jet_id(PtEtaCut(30.0, 2.4));
     // before the 'common->init(ctx)' line.
     
+    AK4jet_printer.reset(new JetPrinter("AK4 jets",30.));
+
+
     // 2. set up selections
     njet_sel.reset(new NJetSelection(2)); // see common/include/NSelections.h
-
+    deltaEtaAK4_sel.reset(new VBFdeltaEtajetSelection()); 
+    invMAK4_sel.reset(new invMassVBFjetSelection());
 
 
     // 3. Set up Hists classes:
@@ -199,11 +220,14 @@ Plot94JetsModule::Plot94JetsModule(Context & ctx){
     h_common.reset(new Plot94JetsHists(ctx, "common"));
     h_jec.reset(new Plot94JetsHists(ctx, "jec"));
     h_jetcleaner.reset(new Plot94JetsHists(ctx, "jetcleaner"));
+    h_jetID.reset(new Plot94JetsHists(ctx, "jetID"));
     h_AK8jetcleaner.reset(new Plot94JetsHists(ctx, "AK8jetcleaner"));
     h_2AK8.reset(new Plot94JetsHists(ctx, "2AK8"));
     h_noOverlap.reset(new Plot94JetsHists(ctx, "noOverlap"));
     h_AK8invMass.reset(new Plot94JetsHists(ctx, "AK8invMass"));
     h_AK8deta.reset(new Plot94JetsHists(ctx, "AK8deta"));
+    h_AK4deta.reset(new Plot94JetsHists(ctx, "AK4deta"));
+    h_AK4invM.reset(new Plot94JetsHists(ctx, "AK4invM"));
     h_2jet.reset(new Plot94JetsHists(ctx, "2jets"));
 
 
@@ -275,7 +299,9 @@ bool Plot94JetsModule::process(Event & event) {
     sort_by_pt<Jet>(*event.jets);
     h_jetcleaner->fill(event);
     if(PRINT)  cout << " jet cleaner " << endl;
-
+    ak4pfidfilter->process(event);
+    h_jetID->fill(event);
+    if(PRINT)  cout << " jet ID " << endl;
 
     AK8jetcleaner->process(event);
     vector<Jet> AK8Jets = event.get(handleAK8Jets);
@@ -292,7 +318,13 @@ bool Plot94JetsModule::process(Event & event) {
 
     h_2AK8->fill(event);
 
+    if(PRINT)
+      {
+	cout << " before AK4 celaning " << endl;
+	AK4jet_printer->process(event);
+	cout << " event.weight " << event.weight << endl;
 
+      }
     //Cleaning(removing) AK4 if overlapping with AK8                                                                                                                                                                                                                                
     std::vector<Jet>* AK4Jets(new std::vector<Jet> (*event.jets));
 
@@ -323,6 +355,14 @@ bool Plot94JetsModule::process(Event & event) {
     /////////////////AK4 cleaning end ////////////////                                                                                                                                                                                                                              
     h_noOverlap->fill(event);
 
+    if(PRINT && event.weight > 200)
+      {
+	cout << " after AK4 celaning " << endl;
+	AK4jet_printer->process(event);
+	cout << " event.weight " << event.weight << endl;
+      }
+
+
     auto invariantMass = (AK8Jets[0].v4() + AK8Jets[1].v4()).M();
     if( invariantMass < 1050. ) return false;
     h_AK8invMass->fill(event);
@@ -331,8 +371,13 @@ bool Plot94JetsModule::process(Event & event) {
     if( fabs(deltaeta) > 1.3) return false;                                                                                                                                                                                                                             
     h_AK8deta->fill(event);
 
+    bool AK4deta_selection = deltaEtaAK4_sel->passes(event);
+    if(!AK4deta_selection) return false;
+    h_AK4deta->fill(event);
 
-
+    bool AK4invM_selection = invMAK4_sel->passes(event);
+    if(!AK4invM_selection) return false;
+    h_AK4invM->fill(event);
 
 
     bool njet_selection = njet_sel->passes(event);

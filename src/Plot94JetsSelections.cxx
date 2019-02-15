@@ -22,3 +22,29 @@ bool DijetSelection::passes(const Event & event){
     return third_jet_frac < third_frac_max;
 }
 
+VBFdeltaEtajetSelection::VBFdeltaEtajetSelection(float deta_min_): deta_min(deta_min_){}
+
+bool VBFdeltaEtajetSelection::passes(const Event & event){
+  assert(event.jets); // if this fails, it probably means jets are not read in                                                                                                                                                                                                
+  if(event.jets->size() < 2) return false;
+  auto deltaeta = event.jets->at(0).eta()-event.jets->at(1).eta();
+  if( fabs(deltaeta) < deta_min) return false;
+  else return true;
+
+}
+
+
+
+invMassVBFjetSelection::invMassVBFjetSelection(float invM_min_): invM_min(invM_min_){}
+
+bool invMassVBFjetSelection::passes(const Event & event){
+  assert(event.jets); // if this fails, it probably means jets are not read in                                                                                                                                                                                                  
+  if(event.jets->size() < 2) return false;
+
+  auto invariantMass = (event.jets->at(0).v4() + event.jets->at(1).v4()).M();
+  if( invariantMass < invM_min) return false;
+  else return true;
+
+
+}
+

@@ -19,4 +19,21 @@ namespace uhh2examples {
   };
 
 
+  class VBFdeltaEtajetSelection: public uhh2::Selection {
+  public:
+    VBFdeltaEtajetSelection(float deta_min = 4.5f);
+    virtual bool passes(const uhh2::Event & event) override;
+  private:
+    float deta_min;
+  };
+
+
+  class invMassVBFjetSelection: public uhh2::Selection {
+  public:
+    invMassVBFjetSelection(float invM_min = 800.0f);
+    virtual bool passes(const uhh2::Event & event) override;
+  private:
+    float invM_min;
+  };
+  
 }
