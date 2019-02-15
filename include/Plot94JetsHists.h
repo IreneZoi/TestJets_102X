@@ -22,6 +22,10 @@ public:
 
   protected:
     uhh2::Event::Handle<std::vector <Jet>  > handleAK8Jets;
+    uhh2::Event::Handle<std::vector <GenParticle>  > h_particles;
+    TH2F *ratioAK4_weights;
+    TH2F *ratioAK8_weights;
+    bool isMC;
 };
 
 }
