@@ -29,22 +29,21 @@
 
    <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="41529.0" >
 
+<!--
         <InputData Version="MC_chs_QCD_HT100to200" Lumi="3.248" NEventsMax="-1" Type="MC" Cacheable="False">
 	  &MC_QCD_HT100to200;            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
 
         <InputData Version="MC_chs_QCD_HT200to300" Lumi="38.132" NEventsMax="-1" Type="MC" Cacheable="False">
 	  &MC_QCD_HT200to300;            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
 
-
-        <InputData Version="MC_chs_QCD_HT300to500" Lumi="182.110" NEventsMax="-1" Type="MC" Cacheable="False">
-	  &MC_QCD_HT300to500;            <InputTree Name="AnalysisTree" /> 
-            
+-->
+        <InputData Version="MC_chs_QCD_HT300to500_test" Lumi="182.110" NEventsMax="1000" Type="MC" Cacheable="False">
+	  <In FileName="/pnfs/desy.de/cms/tier2/store/user//akaravdi/RunII_94X_v2/ReclusteredJetsWithLowPt_wXCONE_wXCONE04R_wXCONE08R_wGenXCONE04R08R_wModifiedMET/MC/QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8/crab_MC_QCD_HT300to500_TuneCP5_13TeV_MadgraphPythia/181004_115659/0000/Ntuple_100.root" Lumi="0.0"/>	        <InputTree Name="AnalysisTree" /> 
         </InputData>
 
+<!--
         <InputData Version="MC_chs_QCD_HT500to700" Lumi="1813.423" NEventsMax="-1" Type="MC" Cacheable="False">
 	  &MC_QCD_HT500to700;            <InputTree Name="AnalysisTree" /> 
             
@@ -69,7 +68,7 @@
 	  &MC_QCD_HT2000toInf;            <InputTree Name="AnalysisTree" /> 
             
         </InputData>
-
+-->
             
         <UserConfig>
             <!-- define which collections to read from the input. Only specify what you need to save I/O time -->

@@ -83,6 +83,7 @@
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
             <Item Name="METName" Value="slimmedMETsPuppi" />
 	    <Item Name="GenInfoName" Value="genInfo" />            
+	    <Item Name="GenParticleCollection" Value="GenParticles" />
 	    <Item Name="algo" Value="PUPPI" />
             <!-- The list of available collections to read in corresponds to the pointer members in event. The 'Name's to use here in the configuration are:
             
