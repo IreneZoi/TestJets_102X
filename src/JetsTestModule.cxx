@@ -193,9 +193,9 @@ JetsTestModule::JetsTestModule(Context & ctx){
     if(ctx.get("algo") == "PUPPI")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
     else if(ctx.get("algo") == "CHS")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFCHS"));
 
-    if(ctx.get("algo") == "PUPPI")
-      AK4PFID=JetPFID(JetPFID::WP_TIGHT_PUPPI);
-    if(ctx.get("algo") == "CHS")
+    //if(ctx.get("algo") == "PUPPI")
+    //AK4PFID=JetPFID(JetPFID::WP_TIGHT_PUPPI);
+    //if(ctx.get("algo") == "CHS")
       AK4PFID=JetPFID(JetPFID::WP_TIGHT);
     
     ak4pfidfilter.reset(new JetCleaner(ctx,AK4PFID));
