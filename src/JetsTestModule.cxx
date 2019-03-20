@@ -38,14 +38,16 @@ private:
 
     std::unique_ptr<JetCorrector> jet_corrector_B;
     std::unique_ptr<JetCorrector> jet_corrector_C;
-    std::unique_ptr<JetCorrector> jet_corrector_DE;
+    std::unique_ptr<JetCorrector> jet_corrector_D;
+    std::unique_ptr<JetCorrector> jet_corrector_E;
     std::unique_ptr<JetCorrector> jet_corrector_F;
 
     std::unique_ptr<GenericJetCorrector> AK8jet_corrector;
   
     std::unique_ptr<GenericJetCorrector> AK8jet_corrector_B;
     std::unique_ptr<GenericJetCorrector> AK8jet_corrector_C;
-    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_DE;
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_D;
+    std::unique_ptr<GenericJetCorrector> AK8jet_corrector_E;
     std::unique_ptr<GenericJetCorrector> AK8jet_corrector_F;
 
     std::unique_ptr<JetCleaner> jetcleaner;
@@ -103,9 +105,9 @@ JetsTestModule::JetsTestModule(Context & ctx){
     isMC = (ctx.get("dataset_type") == "MC");
 
     if(ctx.get("algo") == "PUPPI")
-      handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+      handleAK8Jets = ctx.get_handle<vector<Jet>>("jetsAk8Puppi");
     else if(ctx.get("algo") == "CHS")
-      handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFCHS");
+      handleAK8Jets = ctx.get_handle<vector<Jet>>("jetsAk8CHS");
     
 
 // 1. setup other modules. CommonModules and the JetCleaner:
@@ -120,7 +122,7 @@ JetsTestModule::JetsTestModule(Context & ctx){
     common->init(ctx);
 
     // Jet correctors                                                                                                                                                                                                                                                      
-    std::vector<std::string> JEC_AK4, JEC_AK8,JEC_AK4_B,JEC_AK4_C,JEC_AK4_DE,JEC_AK4_F,JEC_AK8_B,JEC_AK8_C,JEC_AK8_DE,JEC_AK8_F;
+    std::vector<std::string> JEC_AK4, JEC_AK8,JEC_AK4_B,JEC_AK4_C,JEC_AK4_D,JEC_AK4_E,JEC_AK4_F,JEC_AK8_B,JEC_AK8_C,JEC_AK8_D,JEC_AK8_E,JEC_AK8_F;
 
     if(isMC)
       {
@@ -141,62 +143,71 @@ JetsTestModule::JetsTestModule(Context & ctx){
           {
 	    JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFPuppi_DATA;
 	    JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFPuppi_DATA;
-	    JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFPuppi_DATA;
+	    JEC_AK4_D = JERFiles::Fall17_17Nov2017_V32_D_L123_AK4PFPuppi_DATA;
+	    JEC_AK4_E = JERFiles::Fall17_17Nov2017_V32_E_L123_AK4PFPuppi_DATA;
 	    JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFPuppi_DATA;
 
 	    JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFPuppi_DATA;
 	    JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFPuppi_DATA;
-	    JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_D = JERFiles::Fall17_17Nov2017_V32_D_L123_AK8PFPuppi_DATA;
+	    JEC_AK8_E = JERFiles::Fall17_17Nov2017_V32_E_L123_AK8PFPuppi_DATA;
 	    JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFPuppi_DATA;
 	  }
         if(ctx.get("algo") == "CHS")
           {
 	    JEC_AK4_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK4PFchs_DATA;
 	    JEC_AK4_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK4PFchs_DATA;
-	    JEC_AK4_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK4PFchs_DATA;
+	    JEC_AK4_D = JERFiles::Fall17_17Nov2017_V32_D_L123_AK4PFchs_DATA;
+	    JEC_AK4_E = JERFiles::Fall17_17Nov2017_V32_E_L123_AK4PFchs_DATA;
 	    JEC_AK4_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK4PFchs_DATA;
 
 	    JEC_AK8_B = JERFiles::Fall17_17Nov2017_V32_B_L123_AK8PFchs_DATA;
 	    JEC_AK8_C = JERFiles::Fall17_17Nov2017_V32_C_L123_AK8PFchs_DATA;
-	    JEC_AK8_DE = JERFiles::Fall17_17Nov2017_V32_DE_L123_AK8PFchs_DATA;
+	    JEC_AK8_D = JERFiles::Fall17_17Nov2017_V32_D_L123_AK8PFchs_DATA;
+	    JEC_AK8_E = JERFiles::Fall17_17Nov2017_V32_E_L123_AK8PFchs_DATA;
 	    JEC_AK8_F = JERFiles::Fall17_17Nov2017_V32_F_L123_AK8PFchs_DATA;
 	  }
       }
     
     jet_corrector.reset(new JetCorrector(ctx, JEC_AK4));
 
-    if(ctx.get("algo") == "PUPPI")    AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFPUPPI"));
-    else if(ctx.get("algo") == "CHS") AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"patJetsAK8PFCHS"));
+    if(ctx.get("algo") == "PUPPI")    AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"jetsAk8Puppi"));
+    else if(ctx.get("algo") == "CHS") AK8jet_corrector.reset(new GenericJetCorrector(ctx, JEC_AK8,"jetsAk8CHS"));
 
     jet_corrector_B.reset(new JetCorrector(ctx, JEC_AK4_B));
     jet_corrector_C.reset(new JetCorrector(ctx, JEC_AK4_C));
-    jet_corrector_DE.reset(new JetCorrector(ctx, JEC_AK4_DE));
+    jet_corrector_D.reset(new JetCorrector(ctx, JEC_AK4_D));
+    jet_corrector_E.reset(new JetCorrector(ctx, JEC_AK4_E));
     jet_corrector_F.reset(new JetCorrector(ctx, JEC_AK4_F));
 
 
     if(ctx.get("algo") == "PUPPI")
       {
-	AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFPUPPI"));
-	AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFPUPPI"));
-	AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFPUPPI"));
-	AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFPUPPI"));
+	AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"jetsAk8Puppi"));
+	AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"jetsAk8Puppi"));
+	AK8jet_corrector_D.reset(new GenericJetCorrector(ctx, JEC_AK8_D,"jetsAk8Puppi"));
+	AK8jet_corrector_E.reset(new GenericJetCorrector(ctx, JEC_AK8_E,"jetsAk8Puppi"));
+	AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"jetsAk8Puppi"));
       }
     else if(ctx.get("algo") == "CHS")
       { 
-        AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"patJetsAK8PFCHS"));
-        AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"patJetsAK8PFCHS"));
-        AK8jet_corrector_DE.reset(new GenericJetCorrector(ctx, JEC_AK8_DE,"patJetsAK8PFCHS"));
-        AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"patJetsAK8PFCHS"));
+        AK8jet_corrector_B.reset(new GenericJetCorrector(ctx, JEC_AK8_B,"jetsAk8CHS"));
+        AK8jet_corrector_C.reset(new GenericJetCorrector(ctx, JEC_AK8_C,"jetsAk8CHS"));
+        AK8jet_corrector_D.reset(new GenericJetCorrector(ctx, JEC_AK8_D,"jetsAk8CHS"));
+        AK8jet_corrector_E.reset(new GenericJetCorrector(ctx, JEC_AK8_E,"jetsAk8CHS"));
+        AK8jet_corrector_F.reset(new GenericJetCorrector(ctx, JEC_AK8_F,"jetsAk8CHS"));
       } 
 
     jetcleaner.reset(new JetCleaner(ctx, 30.0, 5.)); 
-    if(ctx.get("algo") == "PUPPI")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFPUPPI")); 
-    else if(ctx.get("algo") == "CHS")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "patJetsAK8PFCHS"));
+    if(ctx.get("algo") == "PUPPI")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "jetsAk8Puppi")); 
+    else if(ctx.get("algo") == "CHS")    AK8jetcleaner.reset(new JetCleaner(ctx, 200.0, 2.5, "jetsAk8CHS"));
 
-    //if(ctx.get("algo") == "PUPPI")
-    //AK4PFID=JetPFID(JetPFID::WP_TIGHT_PUPPI);
-    //if(ctx.get("algo") == "CHS")
-      AK4PFID=JetPFID(JetPFID::WP_TIGHT);
+    if(ctx.get("algo") == "PUPPI")
+      AK4PFID=JetPFID(JetPFID::WP_TIGHT_PUPPI);
+    if(ctx.get("algo") == "CHS")
+      AK4PFID=JetPFID(JetPFID::WP_TIGHT_CHS);
+
+    //      AK4PFID=JetPFID(JetPFID::WP_LOOSE);
     
     ak4pfidfilter.reset(new JetCleaner(ctx,AK4PFID));
     
@@ -277,10 +288,15 @@ bool JetsTestModule::process(Event & event) {
 	  AK8jet_corrector_C->process(event);
 	  jet_corrector_C->correct_met(event);
 	}
-	else if(event.run >= runnr_D && event.run < runnr_F){
-	  jet_corrector_DE->process(event);
-	  AK8jet_corrector_DE->process(event);
-	  jet_corrector_DE->correct_met(event);
+	else if(event.run >= runnr_D && event.run < runnr_E){
+	  jet_corrector_D->process(event);
+	  AK8jet_corrector_D->process(event);
+	  jet_corrector_D->correct_met(event);
+	}
+	else if(event.run >= runnr_E && event.run < runnr_F){
+	  jet_corrector_E->process(event);
+	  AK8jet_corrector_E->process(event);
+	  jet_corrector_E->correct_met(event);
 	}
 	else if(event.run >= runnr_F){
 	  jet_corrector_F->process(event);

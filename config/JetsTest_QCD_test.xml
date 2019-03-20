@@ -27,7 +27,7 @@
     <Library Name="libSUHH2JetsTest"/>
     <Package Name="SUHH2JetsTest.par" />
 
-   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="41529.0" >
+   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/102X/Output/" PostFix="" TargetLumi="41529.0" >
 
 <!--
         <InputData Version="MC_QCD_HT500to7000_test" Lumi="2.750" NEventsMax="1000" Type="MC" Cacheable="False">
@@ -41,8 +41,8 @@
         </InputData>
 -->
 
-        <InputData Version="MC_QCD_HT300to500_test" Lumi="168.964" NEventsMax="1000" Type="MC" Cacheable="False">
-<In FileName="/pnfs/desy.de/cms/tier2/store/user//akaravdi/RunII_94X_v2/ReclusteredJetsWithLowPt_wXCONE_wXCONE04R_wXCONE08R_wGenXCONE04R08R_wModifiedMET/MC/QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8/crab_MC_QCD_HT300to500_TuneCP5_13TeV_MadgraphPythia/181004_115659/0000/Ntuple_100.root" Lumi="0.0"/>            <InputTree Name="AnalysisTree" /> 
+        <InputData Version="MC_QCD_HT1000to1500_test" Lumi="15389.278607" NEventsMax="1000" Type="MC" Cacheable="False">
+<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_TEST/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/190305_103552/0000/Ntuple_10.root" Lumi="0.0"/>            <InputTree Name="AnalysisTree" /> 
            </InputData>
 <!--
         <InputData Version="MC_QCD_HT500to700" Lumi="1693.658" NEventsMax="-1" Type="MC" Cacheable="False">
@@ -77,9 +77,9 @@
 
             <Item Name="ElectronCollection" Value="slimmedElectronsUSER" />
             <Item Name="MuonCollection" Value="slimmedMuonsUSER" /> 
-            <Item Name="TauCollection" Value="slimmedTaus" />
-            <Item Name="JetCollection" Value="updatedPatJetsSlimmedJetsPuppi" />
-	    <Item Name="additionalBranches" Value="patJetsAK8PFPUPPI" />
+<!--            <Item Name="TauCollection" Value="slimmedTaus" />-->
+            <Item Name="JetCollection" Value="jetsAk4Puppi" />
+	    <Item Name="additionalBranches" Value="jetsAk8Puppi" />
 <!--            <Item Name="TopJetCollection" Value="updatedPatJetsPatJetsAK8PFPUPPI" />--> <!--patJetsAK8PFPUPPI" />-->
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
             <Item Name="METName" Value="slimmedMETsPuppi" />

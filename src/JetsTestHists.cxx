@@ -57,9 +57,9 @@ JetsTestHists::JetsTestHists(Context & ctx, const string & dirname): Hists(ctx, 
   ratioAK8_weights =   book<TH2F>("ratioAK8_vs_weights", "AK8 p_{T} / gen H_{T}  vs event.weight",1000,0.,5000., 200,0.,4.); //irene 
 
   if(ctx.get("algo") == "PUPPI")
-    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFPUPPI");
+    handleAK8Jets = ctx.get_handle<vector<Jet>>("jetsAk8Puppi");
   else if(ctx.get("algo") == "CHS")
-    handleAK8Jets = ctx.get_handle<vector<Jet>>("patJetsAK8PFCHS");
+    handleAK8Jets = ctx.get_handle<vector<Jet>>("jetsAk8CHS");
 
   h_particles = ctx.get_handle<std::vector <GenParticle> >("genparticles");
   isMC = (ctx.get("dataset_type") == "MC");

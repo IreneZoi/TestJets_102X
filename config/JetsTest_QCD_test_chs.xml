@@ -27,25 +27,24 @@
     <Library Name="libSUHH2JetsTest"/>
     <Package Name="SUHH2JetsTest.par" />
 
-   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/94X/OutputBatch/" PostFix="" TargetLumi="41529.0" >
+   <Cycle Name="uhh2::AnalysisModuleRunner" OutputDirectory="/nfs/dust/cms/user/zoiirene/DiBoson/102X/Output/" PostFix="" TargetLumi="41529.0" >
 
-        <InputData Version="MC_QCD_HT500to7000_test_chs" Lumi="2.750" NEventsMax="100" Type="MC" Cacheable="False">
+<!--
+        <InputData Version="MC_QCD_HT500to7000_test" Lumi="2.750" NEventsMax="1000" Type="MC" Cacheable="False">
 	  <In FileName="/pnfs/desy.de/cms/tier2/store/user//akaravdi/RunII_94X_v2/ReclusteredJetsWithLowPt_wXCONE_wXCONE04R_wXCONE08R_wGenXCONE04R08R_wModifiedMET/MC/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/crab_MC_QCD_HT500to700_TuneCP5_13TeV_MadgraphPythia/181007_122735/0000/Ntuple_100.root" Lumi="0.0"/>
            <InputTree Name="AnalysisTree" /> 
-            <!-- <OutputTree Name="AnalysisTree" /> -->
         </InputData>
-<!--
+
         <InputData Version="MC_QCD_HT200to300" Lumi="34.457" NEventsMax="-1" Type="MC" Cacheable="False">
 	  &MC_QCD_HT200to300;            <InputTree Name="AnalysisTree" /> 
    
         </InputData>
+-->
 
-
-        <InputData Version="MC_QCD_HT300to500" Lumi="168.964" NEventsMax="-1" Type="MC" Cacheable="False">
-	  &MC_QCD_HT300to500;            <InputTree Name="AnalysisTree" /> 
-            
-        </InputData>
-
+        <InputData Version="MC_QCD_HT1000to1500_test_chs" Lumi="15389.278607" NEventsMax="1000" Type="MC" Cacheable="False">
+<In FileName="/pnfs/desy.de/cms/tier2/store/user/akaravdi/RunII_102X_v1_TEST/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/crab_QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/190305_103552/0000/Ntuple_10.root" Lumi="0.0"/>            <InputTree Name="AnalysisTree" /> 
+           </InputData>
+<!--
         <InputData Version="MC_QCD_HT500to700" Lumi="1693.658" NEventsMax="-1" Type="MC" Cacheable="False">
 	  &MC_QCD_HT500to700;            <InputTree Name="AnalysisTree" /> 
             
@@ -75,16 +74,18 @@
         <UserConfig>
             <!-- define which collections to read from the input. Only specify what you need to save I/O time -->
             <Item Name="PrimaryVertexCollection" Value="offlineSlimmedPrimaryVertices" /> 
+
             <Item Name="ElectronCollection" Value="slimmedElectronsUSER" />
             <Item Name="MuonCollection" Value="slimmedMuonsUSER" /> 
-            <Item Name="TauCollection" Value="slimmedTaus" />
-            <Item Name="JetCollection" Value="slimmedJets" />
-	    <Item Name="additionalBranches" Value="patJetsAK8PFCHS" />
+<!--            <Item Name="TauCollection" Value="slimmedTaus" />-->
+            <Item Name="JetCollection" Value="jetsAk4CHS" />
+	    <Item Name="additionalBranches" Value="jetsAk8CHS" />
 <!--            <Item Name="TopJetCollection" Value="updatedPatJetsPatJetsAK8PFPUPPI" />--> <!--patJetsAK8PFPUPPI" />-->
             <Item Name="GenJetCollection" Value="slimmedGenJets" />
-            <Item Name="METName" Value="slimmedMETs" />
+            <Item Name="METName" Value="slimmedMETsPuppi" />
+	    <Item Name="GenParticleCollection" Value="GenParticles" />
 	    <Item Name="GenInfoName" Value="genInfo" />            
-            <Item Name="algo" Value="CHS" /> 
+	    <Item Name="algo" Value="CHS" />
             <!-- The list of available collections to read in corresponds to the pointer members in event. The 'Name's to use here in the configuration are:
             
                  PrimaryVertexCollection
